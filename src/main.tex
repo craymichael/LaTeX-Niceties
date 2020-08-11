@@ -1,0 +1,166 @@
+% Preamble
+\documentclass[11pt]{article}
+
+% Specify how to input and output characters (output font encoding, input encoding i.e. from .tex documents)
+% https://tex.stackexchange.com/questions/44694/fontenc-vs-inputenc
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{lmodern}
+\else
+  \ifXeTeX
+    \usepackage{fontspec}
+  \else
+    \usepackage{luatextra}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX}
+\fi
+
+% Used for creating clickable references with backreferences
+\usepackage[hidelinks,pagebackref=true]{hyperref}
+% Adapted from:
+% https://tex.stackexchange.com/questions/183702/formatting-back-references-in-bibliography-bibtex
+\renewcommand*{\backref}[1]{}
+\renewcommand*{\backrefalt}[4]{{\small[{%
+    \ifcase #1 not cited%
+    \or Cited on page~#2%
+    \else Cited on pages~#2%
+    \fi%
+}]}}
+
+% Used for displaying images
+\usepackage{graphicx}
+
+% allow spaces in figure filenames
+\usepackage[space]{grffile}
+
+% Support for typesetting math (loads amsmath)
+\usepackage{mathtools}
+
+% Support for number sets
+\usepackage{amsfonts}
+
+% Support for logic notation
+\usepackage{amssymb}
+
+% Support for typesetting subcaptions
+\usepackage{subcaption}
+
+% Support for displaying pseudo-code
+\usepackage{algorithm}
+
+% Support for displaying pseudo-code
+%  - noend: Don't display end ...
+\usepackage{algpseudocode}
+
+% Support for code highlighting
+% See: https://www.overleaf.com/learn/latex/Code_Highlighting_with_minted
+\usepackage{minted}
+
+% Support for pretty inline fractions
+\usepackage{nicefrac}
+
+% Nice-looking tables
+\usepackage{booktabs}
+
+% 3 part tables
+\usepackage{threeparttable}
+
+% Multi-row entries in tables
+\usepackage{multirow}
+
+% Bold math symbols (e.g. Greek)
+\usepackage{bm}
+
+% For nicely-formatted SI units
+\usepackage{siunitx}
+
+% expl3 parsing/regex
+\usepackage{xparse}
+
+% Mathematical theorem environments
+\usepackage{amsthm}
+
+% For nice-looking tensor symbols (used in "Tensor Decompositions and Applications" - Tamara G. Kolda and Brett W. Bader)
+\usepackage[mathscr]{eucal}
+
+% Modern bookmarks package (no .out files)
+\usepackage{bookmark}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Macros
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{macros}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Math Setup
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% https://www.overleaf.com/learn/latex/Theorems_and_proofs
+
+% == Plain theorem style ==
+\theoremstyle{plain}
+% Reset theorem counter after each chapter
+\newtheorem{theorem}{Theorem}[chapter]
+% Reset theorem counter after each theorem
+\newtheorem{corollary}[theorem]{Corollary}
+% Copy counter of theorem
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{claim}[theorem]{Claim}
+% Rogue
+\newtheorem{proposition}{Proposition}
+
+% == Definition theorem style ==
+\theoremstyle{definition}
+% Copy counter of theorem, reset definition counter after each section
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{example}{Example}[chapter]
+
+% == Remark theorem style ==
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+\newtheorem*{note}{Note}
+\newtheorem*{observation}{Observation}
+
+
+% = Resources =
+% https://en.wikibooks.org/wiki/LaTeX/Text_Formatting#Hyphenation
+% https://tex.stackexchange.com/questions/182569/how-to-manually-set-where-a-word-is-split
+
+% = Custom hyphenation: =
+% \hyphenation{every-where}
+
+% = If using babel =
+%\babelhyphenation[english]{every-where}
+
+% = Use English max =
+% \usepackage[english=usenglishmax]{hyphsubst}
+
+% Some example hyphenations (especially for words LaTeX doesn't know)
+\hyphenation{data-set data-sets cowboy}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Document Configuration
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Author, title, and date
+\author{Zachariah JL Carmichael \orcidicon{0000-0002-7603-2004}}
+
+% Set the path for the figures
+\graphicspath{
+{figures/}
+{01_introduction/figures/}
+{02_background/figures/}
+{03_methods/figures/}
+{04_results/figures/}
+{05_discussion_conclusions/figures/}
+}
+
+% Document
+\begin{document}
+
+
+
+\end{document}

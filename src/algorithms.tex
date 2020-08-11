@@ -1,0 +1,139 @@
+%! Author = zach
+%! Date = 8/10/20
+
+% Preamble
+\documentclass[11pt]{article}
+
+% Packages
+% Required Packages
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% Algorithm rule (to break alg. sections)
+\newcommand{\algrule}[1][.2pt]{\par\vskip.5\baselineskip\hrule height #1\par\vskip.5\baselineskip}
+
+% Breakable algorithm environment (use instead of algorithm
+\makeatletter % https://tex.stackexchange.com/questions/33866/algorithm-tag-and-page-break
+\newenvironment{breakablealgorithm}
+{% \begin{breakablealgorithm}
+    \begin{center}
+        \refstepcounter{algorithm}% New algorithm
+        \hrule height.8pt depth0pt \kern2pt% \@fs@pre for \@fs@ruled
+        \renewcommand{\caption}[2][\relax]{% Make a new \caption
+            {\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}%
+            \ifx\relax##1\relax % #1 is \relax
+            \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+            \else % #1 is not \relax
+            \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+            \fi
+            \kern2pt\hrule\kern2pt
+        }
+}{% \end{breakablealgorithm}
+    \kern2pt\hrule\relax% \@fs@post for \@fs@ruled
+\end{center}
+}
+\makeatother
+
+% Unary minus (smaller minus sign)
+\usepackage{graphics}
+\newcommand{\unaryminus}{\scalebox{0.75}[1.0]{\( - \)}}
+
+% Document style for headers
+\usepackage{newtxmath}
+\newcommand{\headersty}[1]{{\normalfont\normalsize\centering\scshape #1}}
+
+% Document
+\begin{document}
+
+\section{Posit Data Decoding (algorithm environment)}
+\begin{algorithm}
+\caption{Posit data extraction of $n$-bit input with $es$ exponent bits}\label{alg:posit_data_extract}
+\begin{algorithmic}[1]
+\begingroup
+\small
+\setlength{\thinmuskip}{2mu}
+\setlength{\medmuskip}{3mu plus 1.5mu minus 3mu}
+\setlength{\thickmuskip}{3.5mu plus 3.5mu}
+\Procedure{Decode}{$\tt{in}$}\Comment{Data extraction of $\tt{in}$}
+\State ${\tt{nzero}} \gets |{\tt{in}}$\Comment{`1' if $\tt{in}$ is nonzero}
+\State ${\tt{sign}} \gets {\tt{in}}[n\unaryminus1]$\Comment{Extract sign}
+\State ${\tt{twos}} \gets (\{n\unaryminus1\{{\tt{sign}}\}\}\oplus {\tt{in}}[n\unaryminus2:0])+{\tt{sign}}$\Comment{2's Comp.}
+\State ${\tt{rc}} \gets {\tt{twos}}[n\unaryminus2]$\Comment{Regime check}
+\State ${\tt{inv}} \gets \{n\unaryminus1\{{\tt{rc}}\}\} \oplus {\tt{twos}}$\Comment{Invert 2's}
+\State ${\tt{zc}} \gets \textup{LZD}({\tt{inv}})$\Comment{Count leading zeros}
+\State ${\tt{tmp}} \gets {\tt{twos}}[n\unaryminus4:0] \ll ({\tt{zc}}-1)$\Comment{Shift out regime}
+\State ${\tt{frac}} \gets \{{\tt{nzero}}, {\tt{tmp}}[n\unaryminus es \unaryminus 4:0]\}$\Comment{Extract fraction}
+\State ${\tt{exp}} \gets {\tt{tmp}}[n\unaryminus 4:n\unaryminus es \unaryminus 3]$\Comment{Extract exponent}
+\State ${\tt{reg}} \gets {\tt{rc}}~?~{\tt{zc}}\unaryminus1:\unaryminus {\tt{zc}}$\Comment{Select regime}
+\State \textbf{return} $\tt{sign}$, $\tt{reg}$, $\tt{exp}$, $\tt{frac}$
+\EndProcedure
+\endgroup
+\end{algorithmic}
+\end{algorithm}
+
+\section{Posit EMAC (breakablealgorithm environment)}
+
+\begin{breakablealgorithm}%[H]
+\caption{Posit EMAC operation for $n$-bit inputs each with $es$ exponent bits}\label{alg:posit_edp}
+\begin{algorithmic}[1]
+\begingroup
+\small
+\setlength{\thinmuskip}{2mu}
+\setlength{\medmuskip}{3mu plus 1.5mu minus 3mu}
+\setlength{\thickmuskip}{3.5mu plus 3.5mu}
+\Procedure{PositEMAC}{$\tt{weight,activation}$}
+\State ${\tt{sign_w}}, {\tt{reg_w}}, {\tt{exp_w}}, {\tt{frac_w}} \gets \text{\headersty{Decode}}({\tt{weight}})$
+\State ${\tt{sign_a}}, {\tt{reg_a}}, {\tt{exp_a}}, {\tt{frac_a}} \gets \text{\headersty{Decode}}({\tt{activation}})$
+\State ${\tt{sf_w}} \gets \{{\tt{reg_w}}, {\tt{exp_w}}\}$\Comment{Gather scale factors}
+\State ${\tt{sf_a}} \gets \{{\tt{reg_a}}, {\tt{exp_a}}\}$
+\algrule \hspace{-1.75mm}\textbf{Multiplication}
+\State ${\tt{sign_{mult}}} \gets {\tt{sign_w}} \oplus {\tt{sign_a}}$
+\State ${\tt{frac_{mult}}} \gets {\tt{frac_w}} \times {\tt{frac_a}}$
+\State ${\tt{ovf_{mult}}} \gets {\tt{frac_{mult}}}[{\tt{MSB}}]$\Comment{Adjust for overflow}
+\State ${\tt{normfrac_{mult}}} \gets {\tt{frac_{mult}}} \gg {\tt{ovf_{mult}}}$
+\State ${\tt{sf_{mult}}} \gets {\tt{sf_{w}}} + {\tt{sf_{a}}} + {\tt{ovf_{mult}}}$
+\algrule \hspace{-1.75mm}\textbf{Accumulation}
+\State ${\tt{fracs_{mult}}} \gets {\tt{sign_{mult}}}~?~{\unaryminus\tt{frac_{mult}}}:{\tt{frac_{mult}}}$
+\State ${\tt{sf_{biased}}} \gets {\tt{sf_{mult}}} + bias$\Comment{Bias the scale factor}
+\State ${\tt{fracs_{fixed}}} \gets {\tt{fracs_{mult}}} \ll {\tt{sf_{biased}}}$\Comment{Shift to fixed}
+\State ${\tt{sum_{quire}}} \gets {\tt{fracs_{fixed}}} + {\tt{sum_{quire}}}$\Comment{Accumulate}
+\algrule \hspace{-1.75mm}\textbf{Fraction \& SF Extraction}
+\State ${\tt{sign_{quire}}} \gets {\tt{sum_{quire}}}[{\tt{MSB}}]$
+\State ${\tt{mag_{quire}}} \gets {\tt{sign_{quire}}}~?~{\unaryminus\tt{sum_{quire}}}:{\tt{sum_{quire}}}$
+\State ${\tt{zc}} \gets \textup{LZD}({\tt{mag_{quire}}})$
+\State ${\tt{frac_{quire}}} \gets {\tt{mag_{quire}}}[2{\times}(n\unaryminus 2\unaryminus es)\unaryminus 1{+}{\tt{zc}}:{\tt{zc}}]$
+\State ${\tt{sf_{quire}}} \gets {\tt{zc}} \unaryminus bias$
+\algrule \hspace{-1.75mm}\textbf{Convergent Rounding \& Encoding}
+\State ${\tt{nzero}} \gets |{\tt{frac_{quire}}}$
+\State ${\tt{sign_{sf}}} \gets {\tt{sf_{quire}}}[{\tt{MSB}}]$
+\State ${\tt{exp}} \gets {\tt{sf_{quire}}}[es\unaryminus 1:0]$\Comment{Unpack scale factor}
+\State ${\tt{reg_{tmp}}} \gets {\tt{sf_{quire}}}[{\tt{MSB}}\unaryminus1:es]$
+\State ${\tt{reg}} \gets {\tt{sign_{sf}}}~?~\unaryminus{\tt{reg_{tmp}}}:{\tt{reg_{tmp}}}$
+\State ${\tt{ovf_{reg}}} \gets {\tt{reg}}[{\tt{MSB}}]$\Comment{Check for overflow}
+\State ${\tt{reg_f}} \gets {\tt{ovf_{reg}}}~?~\{\{\lceil\log_2(n)\rceil\unaryminus 2 \{{\tt{1}}\}\}), {\tt{0}}\} : {\tt{reg}}$
+\State ${\tt{exp_f}} \gets ({\tt{ovf_{reg}}}|{\sim}{\tt{nzero}}|{(\tt{\&{\tt{reg_f}}}}))~?~\{es\{{\tt{0}}\}\}:{\tt{exp}}$
+\State ${\tt{tmp1}} \gets \{{\tt{nzero}}, {\tt{0}}, {\tt{exp_f}}, {\tt{frac_{quire}}}[{\tt{MSB}}\unaryminus 1:0],$ \par
+$~~~~~~~~~~\{n\unaryminus 1 \{{\tt{0}}\}\}\}$
+\State ${\tt{tmp2}} \gets \{{\tt{0}}, {\tt{nzero}}, {\tt{exp_f}}, {\tt{frac_{quire}}}[{\tt{MSB}}\unaryminus 1:0],$ \par
+$~~~~~~~~~~\{n\unaryminus 1 \{{\tt{0}}\}\}\}$
+\State ${\tt{ovf_{regf}}} \gets \&{\tt{reg_f}}$
+\If {${\tt{ovf_{regf}}}$}
+\State ${\tt{shift_{neg}}} \gets {\tt{reg_{f}}} - 2$
+\State ${\tt{shift_{pos}}} \gets {\tt{reg_{f}}} - 1$
+\Else
+\State ${\tt{shift_{neg}}} \gets {\tt{reg_{f}}} - 1$
+\State ${\tt{shift_{pos}}} \gets {\tt{reg_{f}}}$
+\EndIf
+\State ${\tt{tmp}} \gets {\tt{sign_{sf}}}~?~{\tt{tmp2}} \gg {\tt{shift_{neg}}} : {\tt{tmp1}} \gg {\tt{shift_{pos}}}$
+\State ${\tt{lsb}}, {\tt{guard}} \gets {\tt{tmp}}[{\tt{MSB}}\unaryminus (n\unaryminus 2):{\tt{MSB}}\unaryminus (n\unaryminus 1)]$
+\State ${\tt{round}} \gets {\sim}({\tt{ovf_{reg}}}|{\tt{ovf_{regf}}})~? $ \par
+$~~~~~~~~~~~~~~~~~~(~{\tt{guard}}~\&~({\tt{lsb}}~|~(|{\tt{tmp}}[{\tt{MSB}}\unaryminus n : 0]))~) : {\tt{0}}$
+\State ${\tt{result_{tmp}}} \gets {\tt{tmp}}[{\tt{MSB}} : {\tt{MSB}}\unaryminus n{+}1] {+} {\tt{round}}$
+\State ${\tt{result}} \gets {\tt{sign_{quire}}}~?~\unaryminus{\tt{result_{tmp}}} : {\tt{result_{tmp}}}$
+\State \textbf{return} ${\tt{result}}$
+\EndProcedure
+\endgroup
+\end{algorithmic}
+\end{breakablealgorithm}
+
+\end{document}

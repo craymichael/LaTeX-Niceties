@@ -1,0 +1,73 @@
+\documentclass{article}
+% To change font size of general text:
+% \documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+% Uncomment to specify page dimensions and margins
+% \usepackage[a4paper,paperwidth=8.5in,paperheight=11in]{geometry}
+% \geometry{lmargin=1in,rmargin=1in,tmargin=1in,bmargin=1in}
+
+\usepackage{titlesec}  % Needed to adjust section spacing
+\usepackage{setspace}  % Needed to adjust line spacing (single-spaced, double-spaced, etc.)
+\usepackage{lipsum}
+
+% spacing: how to read {12pt plus 4pt minus 2pt}
+%           12pt is what we would like the spacing to be
+%           plus 4pt means that TeX can stretch it by at most 4pt
+%           minus 2pt means that TeX can shrink it by at most 2pt
+%       This is one example of the concept of, 'glue', in TeX
+\titlespacing\section{0pt}{12pt plus 4pt minus 2pt}{0pt plus 2pt minus 2pt}
+\titlespacing\subsection{0pt}{12pt plus 4pt minus 2pt}{0pt plus 2pt minus 2pt}
+\titlespacing\subsubsection{0pt}{12pt plus 4pt minus 2pt}{0pt plus 2pt minus 2pt}
+
+% To change figure caption font sizes
+% \usepackage[font=small,labelfont=bf]{caption}
+
+% To change the section font size
+% \titleformat{\section}{\normalfont\fontsize{12}{15}\bfseries}{\thesection}{1em}{}
+
+% Redefining font sizes for:
+% \Huge
+% \huge
+% \LARGE
+% \Large
+% \large
+% \normalsize (default)
+% \small
+% \footnotesize
+% \scriptsize
+% \tiny
+% Example: 
+% \makeatletter
+% \renewcommand\Large{\@setfontsize\Large{13pt}{18}}
+% \makeatother
+
+% Good References:
+% Line breaks and blank spaces: https://www.overleaf.com/learn/latex/Line_breaks_and_blank_spaces
+% Horizontal spacing commands: https://tex.stackexchange.com/q/74353/153045
+% Page size and margins:  https://www.overleaf.com/learn/latex/Page_size_and_margins
+
+\title{Spacing Test}
+
+\begin{document}
+    \maketitle
+
+    \section{section}
+    \lipsum[2]
+    \section{section}
+    \lipsum[2]
+
+    \subsection{subsection}
+    \lipsum[2]
+    \subsection{subsection}
+    \lipsum[2]
+
+    \subsubsection{subsubsection}
+    \lipsum[2]
+    \subsubsection{subsubsection}
+    \lipsum[2]
+
+    \begin{singlespace}  % Single-spaced example text
+        \lipsum[2]
+    \end{singlespace}
+
+\end{document}

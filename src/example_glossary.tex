@@ -1,0 +1,68 @@
+% Typeset indexes - Needed for sorting the glossary
+%  - xindy: Sorting / indexing of items
+\usepackage[xindy]{imakeidx}
+
+% Support for glossaries
+\usepackage[
+    nopostdot,     % Omit dot at the end of each description
+    nonumberlist,  % Suppress number of items
+    acronym,       % Support for acronyms
+    toc,           % Add glossary to table of contents
+    xindy          % Sorting / indexing of items
+]{glossaries}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Glossary Setup
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Load the glossary (main type)
+\loadglsentries{glossary}
+
+% Load the glossary (acronym type)
+\loadglsentries[type=\acronymtype]{acronym}
+
+% Create and load the glossary (symbol type)
+% https://tex.stackexchange.com/questions/269565/glossaries-how-to-customize-list-of-symbols-with-additional-column-for-units
+\newglossary[sy1]{symbol}{sy2}{sy3}{Notation and Symbols}
+% Add the "symb" key
+\glsaddkey{symb}{\glsentrytext{\glslabel}}{\glsentrysymb}{\GLsentrysymb}{\glssymb}{\Glssymb}{\GLSsymb}
+% Create tabular glossary style
+\newglossarystyle{symblong3col}{%
+    \setglossarystyle{long3col}
+    \renewenvironment{theglossary}{
+    %   \setlength\LTleft{0pt}
+    %   \setlength\LTright{0pt}
+        \begin{longtable}{l>{\centering\arraybackslash}p{\glspagelistwidth}p{\glsdescwidth}}}
+    {\end{longtable}}%
+\renewcommand*{\glossaryheader}{  %  Change the table header
+\bfseries Name & \bfseries Symbol & \bfseries Description \\
+\hline
+\endhead}
+\renewcommand*{\glossentry}[2]{%  Change the displayed items
+\glstarget{##1}{\glossentryname{##1}}    % Name
+& \glssymb{##1}                          % Symbol
+& \glossentrydesc{##1}  \tabularnewline  % Description
+}
+}
+\loadglsentries[type=symbol]{symbols}
+
+% Initialize the glossary and acronyms
+\makeglossaries
+\setglossarystyle{altlist}
+\setacronymstyle{long-short}
+
+% Sort the glossary
+\makeindex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+% Add the acronyms
+\glsaddall
+
+\printglossary[type=\acronymtype]
+\printglossary[type=symbol, style=symblong3col]
+
+% Reset all acronyms
+\glsresetall
+
+\end{document}

@@ -1,0 +1,174 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Macros
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Depends on `xparse` package. Adapted from:
+% https://tex.stackexchange.com/questions/26870/check-if-a-string-contains-a-given-character/26875#26875
+\makeatletter
+
+\RequirePackage{xparse}
+% https://tex.stackexchange.com/questions/21466/test-if-token-is-a-control-sequence
+\def\@ifismacro#1{%
+    \begingroup\escapechar=-1
+    \edef\x{\endgroup\def\noexpand\first{\string#1}}\x
+    \begingroup\escapechar=`\\
+    \edef\x{\endgroup\def\noexpand\second{\string#1}}\x
+    \ifnum\pdfstrcmp{\first}{\second}=\z@
+    \expandafter\@secondoftwo % no backslash in front
+    \else
+    \expandafter\@firstoftwo  % backslash in front
+    \fi}
+
+\ExplSyntaxOn
+
+% Error on Regex Mismatch
+% ex: \erroronregexmismatch{^[a-z]}{#1}
+\NewDocumentCommand{\erroronregexmismatch}{mm}
+{
+    \erroronregexmismatch:nn { #1 } { #2 }
+}
+% Hey you - ignore the non-compilation errors this might give you
+\cs_new_protected:Nn \erroronregexmismatch:nn
+{
+% Check if macro (ignore regex in this case)
+    \@ifismacro{ #2 }{ #2 }{
+        \regex_match:nnTF { #1 } { #2 } { #2 }
+        {\PackageError{macro-erroronregexmismatch}{Regex~mismatch}{"#2"~does~not~match~the~regex:~"#1"}
+            ???}
+    }
+}
+
+\ExplSyntaxOff
+\makeatother
+
+% OrcID
+% https://tex.stackexchange.com/questions/445563/ieeetran-how-to-include-orcid-in-tex-pdf-with-pdflatex
+\RequirePackage{scalerel}
+\RequirePackage{tikz}
+\usetikzlibrary{svg.path}
+
+\definecolor{orcidlogocol}{HTML}{A6CE39}
+\tikzset{
+    orcidlogo/.pic={
+        \fill[orcidlogocol] svg{M256,128c0,70.7-57.3,128-128,128C57.3,256,0,198.7,0,128C0,57.3,57.3,0,128,0C198.7,0,256,57.3,256,128z};
+        \fill[white] svg{M86.3,186.2H70.9V79.1h15.4v48.4V186.2z}
+        svg{M108.9,79.1h41.6c39.6,0,57,28.3,57,53.6c0,27.5-21.5,53.6-56.8,53.6h-41.8V79.1z M124.3,172.4h24.5c34.9,0,42.9-26.5,42.9-39.7c0-21.5-13.7-39.7-43.7-39.7h-23.7V172.4z}
+        svg{M88.7,56.8c0,5.5-4.5,10.1-10.1,10.1c-5.6,0-10.1-4.6-10.1-10.1c0-5.6,4.5-10.1,10.1-10.1C84.2,46.7,88.7,51.3,88.7,56.8z};
+    }
+}
+
+\newcommand\orcidicon[1]{\href{https://orcid.org/#1}{\mbox{\scalerel*{
+    \begin{tikzpicture}[yscale=-1,transform shape]
+        \pic{orcidlogo};
+    \end{tikzpicture}
+}{|}}}}
+
+
+% https://stackoverflow.com/questions/2724760/how-to-write-c-in-latex
+\RequirePackage{relsize}
+%c from texinfo.tex
+\def\ifmonospace{\ifdim\fontdimen3\font=0pt }
+
+%c C plus plus
+\def\CPP{%
+    \ifmonospace%
+    C++%
+    \else%
+    C\kern-.1667em\raise.30ex\hbox{\smaller{++}}%
+    \fi%
+    \spacefactor1000 }
+
+%c C sharp
+\def\Csharp{%
+    \ifmonospace%
+    C\#%
+    \else%
+    C\kern-.1667em\raise.30ex\hbox{\smaller{\#}}%
+    \fi%
+    \spacefactor1000 }
+
+% Notation:
+% VECTOR
+\RequirePackage{bm}
+\newcommand{\vect}[1]{\bm{\mathrm{\erroronregexmismatch{^[a-z]}{#1}}}}
+\newcommand{\textvect}[1]{\mbox{$\vect{#1}$}}
+
+% MATRIX
+\RequirePackage{bm}
+\newcommand{\mat}[1]{\bm{\mathrm{\erroronregexmismatch{^[A-Z]}{#1}}}}
+\newcommand{\textmat}[1]{\mbox{$\mat{#1}$}}
+
+% TENSOR
+\RequirePackage[mathscr]{eucal}
+\RequirePackage{bm}
+\newcommand{\tensor}[1]{\bm{\mathscr{\erroronregexmismatch{^[A-Z]}{#1}}}}
+\newcommand{\texttensor}[1]{\mbox{$\tensor{#1}$}}
+
+% Wrap algorithms across multiple pages in this env ("breakablealgorithm")
+\RequirePackage{algorithm}
+\RequirePackage{algpseudocode}
+\makeatletter % https://tex.stackexchange.com/questions/33866/algorithm-tag-and-page-break
+\newenvironment{breakablealgorithm}
+{% \begin{breakablealgorithm}
+    \setstretch{1.0}% apparently this was necessary...
+    \begin{center}
+        \refstepcounter{algorithm}% New algorithm
+        \hrule height.8pt depth0pt \kern2pt% \@fs@pre for \@fs@ruled
+        \renewcommand{\caption}[2][\relax]{% Make a new \caption
+            {\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}%
+            \ifx\relax##1\relax % #1 is \relax
+            \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+            \else % #1 is not \relax
+            \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+            \fi
+            \kern2pt\hrule\kern2pt
+        }
+}{% \end{breakablealgorithm}
+    \kern2pt\hrule\relax% \@fs@post for \@fs@ruled
+\end{center}
+}
+\makeatother
+
+% Overbrace with consistent height
+\newcommand{\xoverbrace}[2][\vphantom{A}]{\overbrace{#1#2}}
+
+% IEEE style big header text
+\newcommand{\headersty}[1]{{\normalfont\normalsize\centering\scshape #1}}
+
+% Small minus sign
+\RequirePackage{graphicx}
+\newcommand{\unaryminus}{\scalebox{0.75}[1.0]{\( - \)}}
+
+% Rule that can be inserted in algorithms to break/label sections
+\newcommand{\algrule}[1][.2pt]{\par\vskip.5\baselineskip\hrule height #1\par\vskip.5\baselineskip}
+
+
+% https://tex.stackexchange.com/questions/43008/absolute-value-symbols
+% Absolute value and norm operators
+\RequirePackage{mathtools}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}%
+% Swap the definition of \abs* and \norm*, so that \abs
+% and \norm resizes the size of the brackets, and the
+% starred version does not.
+\makeatletter
+\let\oldabs\abs
+\def\abs{\@ifstar{\oldabs}{\oldabs*}}
+%
+\let\oldnorm\norm
+\def\norm{\@ifstar{\oldnorm}{\oldnorm*}}
+\makeatother
+
+% TODO marker in red
+\RequirePackage{xcolor}
+% Do NOT use this command:
+\newcommand{\TODOwarning}{\PackageWarning{macro-TODO}{At least 1 TODO is present.}}
+% Use THIS one (ex. \TODO{amend this figure description}):
+\newcommand{\TODO}[1]{%
+\noindent\textcolor{red}{\textbf{TODO}: #1}%
+\TODOwarning%
+\let\TODOwarning\relax% Undefine TODOwarning (only show up once in logs)
+}
+
+% Array stretch command for pretty tables
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}

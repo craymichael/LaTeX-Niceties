@@ -1,0 +1,172 @@
+% NOTE: if you are experiencing weird compilation issues (such as glossary does not show up at all or glossary is not updated), clear your cache or delete the output.sy{1,2,3} files. Clear cache in Overleaf:
+% https://www.overleaf.com/learn/how-to/Clearing_the_cache
+
+% == NOTATION ==
+\newglossaryentry{not:vector}
+{
+    symb=\textvect{v},
+name=vector,
+description={A vector is denoted as a bold lowercase character (e.g. \textvect{v})},
+type=symbol
+}
+
+\newglossaryentry{not:matrix}
+{
+    symb=\textmat{M},
+name=matrix,
+description={A matrix is denoted as a bold uppercase character (e.g. \textmat{M})},
+type=symbol
+}
+
+\newglossaryentry{not:tensor}
+{
+    symb=\texttensor{T},
+name=tensor,
+description={A tensor is denoted as a bold calligraphic character (e.g. \texttensor{T})},
+type=symbol
+}
+
+\newglossaryentry{not:interval_int_closed}
+{
+    symb=\ensuremath{[a..b]},
+name=-,
+sort={interval closed integer},
+description={The closed integer interval between $a$ and $b$},
+type=symbol
+}
+
+\newglossaryentry{not:interval_int_open}
+{
+    symb=\ensuremath{(a..b)},
+name=-,
+sort={interval open integer},
+description={The open integer interval between $a$ and $b$},
+type=symbol
+}
+
+\newglossaryentry{not:interval_real_closed}
+{
+    symb=\ensuremath{[a, b]},
+name=-,
+sort={interval closed real},
+description={The closed real interval between $a$ and $b$},
+type=symbol
+}
+
+\newglossaryentry{not:interval_real_open}
+{
+    symb=\ensuremath{(a, b)},
+name=-,
+sort={interval open real},
+description={The open real interval between $a$ and $b$},
+type=symbol
+}
+
+% == SYMBOLS ==
+\newglossaryentry{symb:reals}
+{
+    symb=\ensuremath{\mathbb{R}},
+name=set of reals,
+description={The set of real numbers},
+type=symbol
+}
+
+\newglossaryentry{symb:ints_pos}
+{
+    symb=\ensuremath{\mathbb{Z} ^ +},
+name=set of positive integers,
+description={The set of positive integers},
+type=symbol
+}
+
+\newglossaryentry{symb:n_mode_mat_prod}
+{
+    symb=\ensuremath{\times_n},
+name={$n$-mode matrix product},
+sort={tensor n-mode matrix product},
+description={$n$-mode product between a tensor and a matrix},
+type=symbol
+}
+
+\newglossaryentry{symb:n_mode_vect_prod}
+{
+    symb=\ensuremath{\bullet_n},
+name={$n$-mode vector product},
+sort={tensor n-mode vector product},
+description={$n$-mode product between a tensor and a vector},
+type=symbol
+}
+
+\newglossaryentry{symb:hadamard}
+{
+    symb=\ensuremath{\odot},
+name={Hadamard product},
+sort={matrix Hadamard product},
+description={The Hadamard (element-wise) product between two matrices},
+type=symbol
+}
+
+\newglossaryentry{symb:outer_prod}
+{
+    symb=\ensuremath{\circ},
+name={outer product},
+sort={vector outer product},
+description={The outer product between two vectors},
+type=symbol
+}
+
+\newglossaryentry{symb:transpose}
+{
+    symb=\ensuremath{\intercal},
+name={matrix transpose},
+description={Denotes the transpose of a matrix (e.g. $\mat{M} ^ \intercal$)},
+type=symbol
+}
+
+\newglossaryentry{symb:kronecker}
+{
+    symb=\ensuremath{\otimes},
+name={Kronecker product},
+sort={matrix Kronecker product},
+description={The Kronecker product between two matrices, e.g. if $\mat{A} \in \mathbb{R} ^ {m \times n}$ and
+    $\mat{B} \in \mathbb{R} ^ {p \times q}$, then the Kronecker product $\mat{A} \otimes \mat{B} \in \mathbb{R} ^ {mp \times nq}$},
+type=symbol
+}
+
+\newglossaryentry{symb:gg}
+{
+    symb=\ensuremath{\gg},
+name={significant (strict) inequality},
+sort={significant (strict) inequality greater},
+description={\emph{is much greater than}},
+type=symbol
+}
+
+\newglossaryentry{symb:ll}
+{
+    symb=\ensuremath{\ll},
+name={significant (strict) inequality},
+sort={significant (strict) inequality less},
+description={\emph{is much less than}},
+type=symbol
+}
+
+\newglossaryentry{symb:frobenius}
+{
+% Illegal parameter number in definition of \glo@symb:frobenius@symb.
+% symb=\ensuremath{\norm{\cdot}_F},
+    symb=\ensuremath{\lVert{\cdot}\rVert_F},
+name={Frobenius norm},
+sort={tensor Frobenius norm},
+description={The matrix and tensor Frobenius norm},
+type=symbol
+}
+
+\newglossaryentry{symb:therefore}
+{
+    symb=\ensuremath{\therefore},
+name={therefore},
+sort={q},
+description={Therefore, e.g. \ensuremath{a = b} and \ensuremath{b = c}, \ensuremath{\therefore a = c}},
+type=symbol
+}
